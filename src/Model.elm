@@ -14,3 +14,4 @@ type Msg
     = ChangeIngredientName Int String
     | ChangeIngredientPercent Int String
     | RemoveIngredient Int
+    | AddIngredient Int

@@ -1,6 +1,11 @@
-module Constants exposing (init)
+module Constants exposing (blankIngredient, init)
 
 import Model exposing (Model)
+
+
+blankIngredient : Model.Ingredient
+blankIngredient =
+    { name = "", percent = 0 }
 
 
 init : ( Model, Cmd msg )
