@@ -34,22 +34,37 @@ formatIngredient i ingredient =
         ]
 
 
-formatIngredientReadOnly : Ingredient -> Html.Html Msg
-formatIngredientReadOnly ingredient =
+formatOneIngredient : Ingredient -> Html.Html Msg
+formatOneIngredient ingredient =
     div []
-        [ text ingredient.name
-        , text (toString ingredient.percent)
+        [ textInput [ onInput (ChangeIngredientName 0) ] ingredient.name
+        , textInput [ onInput (ChangeIngredientPercent 0) ] (toString ingredient.percent)
+        , plusButton 0
         ]
+
+
+formatIngredients : List Ingredient -> List (Html.Html Msg)
+formatIngredients ingredients =
+    case ingredients of
+        [] ->
+            [ text "OH FUCK" ]
+
+        [ ingredient ] ->
+            [ formatOneIngredient ingredient ]
+
+        _ ->
+            List.indexedMap formatIngredient ingredients
+
+
+formatStats : List Ingredient -> Html.Html Msg
+formatStats ingredients =
+    text (toString (List.sum (List.map .percent ingredients)))
 
 
 view : Model -> Html.Html Msg
 view model =
     div []
         (List.append
-            (List.indexedMap formatIngredient
-                model.ingredients
-            )
-            (List.map formatIngredientReadOnly
-                model.ingredients
-            )
+            (formatIngredients model.ingredients)
+            [ formatStats model.ingredients ]
         )
