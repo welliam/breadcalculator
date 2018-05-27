@@ -24,22 +24,16 @@ plusButton i =
     button [ onClick (AddIngredient i) ] [ text "+" ]
 
 
-formatIngredient : Int -> Ingredient -> Html.Html Msg
-formatIngredient i ingredient =
+formatIngredient : Bool -> Int -> Ingredient -> Html.Html Msg
+formatIngredient showMinusButton i ingredient =
     div []
         [ textInput [ onInput (ChangeIngredientName i) ] ingredient.name
         , textInput [ onInput (ChangeIngredientPercent i) ] (toString ingredient.percent)
         , plusButton i
-        , minusButton i
-        ]
-
-
-formatOneIngredient : Ingredient -> Html.Html Msg
-formatOneIngredient ingredient =
-    div []
-        [ textInput [ onInput (ChangeIngredientName 0) ] ingredient.name
-        , textInput [ onInput (ChangeIngredientPercent 0) ] (toString ingredient.percent)
-        , plusButton 0
+        , if showMinusButton then
+            minusButton i
+          else
+            text ""
         ]
 
 
@@ -50,10 +44,10 @@ formatIngredients ingredients =
             [ text "OH FUCK" ]
 
         [ ingredient ] ->
-            [ formatOneIngredient ingredient ]
+            [ formatIngredient False 0 ingredient ]
 
         _ ->
-            List.indexedMap formatIngredient ingredients
+            List.indexedMap (formatIngredient True) ingredients
 
 
 formatStats : List Ingredient -> Html.Html Msg
