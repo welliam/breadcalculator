@@ -1,13 +1,15 @@
 module Model exposing (..)
 
-import Keyboard
-import Time
-
 
 type alias Model =
-    { message : String
+    { ingredients : List Ingredient
     }
 
 
+type alias Ingredient =
+    { name : String, percent : Int }
+
+
 type Msg
-    = ChangeMessage String
+    = ChangeIngredientName Int String
+    | ChangeIngredientPercent Int String

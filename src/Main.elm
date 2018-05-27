@@ -2,10 +2,8 @@ module Main exposing (..)
 
 import Constants
 import Html
-import Keyboard
 import Model exposing (..)
 import Subscriptions exposing (subscriptions)
-import Time
 import Update exposing (update)
 import View exposing (view)
 
