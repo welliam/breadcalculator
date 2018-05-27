@@ -32,6 +32,19 @@ updateIngredientPercent percent ingredient =
             { ingredient | percent = 0 }
 
 
+removeNth : Int -> List a -> List a
+removeNth index list =
+    case ( index, list ) of
+        ( _, [] ) ->
+            []
+
+        ( 0, head :: rest ) ->
+            rest
+
+        ( i, head :: rest ) ->
+            head :: removeNth (i - 1) rest
+
+
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
@@ -49,6 +62,13 @@ update msg model =
                     updateNth nth
                         model.ingredients
                         (updateIngredientPercent percent)
+              }
+            , Cmd.none
+            )
+
+        RemoveIngredient nth ->
+            ( { ingredients =
+                    removeNth nth model.ingredients
               }
             , Cmd.none
             )

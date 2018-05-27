@@ -1,9 +1,9 @@
 module View exposing (view)
 
 import Constants
-import Html exposing (Attribute, div, input, text)
+import Html exposing (Attribute, button, div, input, text)
 import Html.Attributes exposing (attribute)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
 import Model exposing (..)
 
 
@@ -14,12 +14,18 @@ textInput attributes value =
         []
 
 
+minusButton : Int -> Html.Html Msg
+minusButton i =
+    button [ onClick (RemoveIngredient i) ] [ text "-" ]
+
+
 formatIngredient : Int -> Ingredient -> Html.Html Msg
 formatIngredient i ingredient =
     div []
         [ textInput [ onInput (ChangeIngredientName i) ]
             ingredient.name
         , textInput [ onInput (ChangeIngredientPercent i) ] (toString ingredient.percent)
+        , minusButton i
         ]
 
 

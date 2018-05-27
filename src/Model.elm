@@ -13,3 +13,4 @@ type alias Ingredient =
 type Msg
     = ChangeIngredientName Int String
     | ChangeIngredientPercent Int String
+    | RemoveIngredient Int
