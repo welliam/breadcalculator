@@ -7,7 +7,7 @@ type alias Model =
 
 
 type alias Ingredient =
-    { name : String, percent : Int }
+    { name : String, percent : Float }
 
 
 type Msg

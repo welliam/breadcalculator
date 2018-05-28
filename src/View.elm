@@ -3,7 +3,8 @@ module View exposing (view)
 import Constants
 import Html exposing (Attribute, button, div, input, text)
 import Html.Attributes exposing (attribute, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (on, onClick, onInput, targetValue)
+import Json.Decode as Json
 import Model exposing (..)
 
 
@@ -24,11 +25,16 @@ plusButton i =
     button [ onClick (AddIngredient i) ] [ text "+" ]
 
 
+onBlur : (String -> Msg) -> Attribute Msg
+onBlur tagger =
+    on "blur" (Json.map tagger targetValue)
+
+
 formatIngredient : Bool -> Int -> Ingredient -> Html.Html Msg
 formatIngredient showMinusButton i ingredient =
     div []
-        [ textInput [ onInput (ChangeIngredientName i) ] ingredient.name
-        , textInput [ onInput (ChangeIngredientPercent i) ] (toString ingredient.percent)
+        [ textInput [ onBlur (ChangeIngredientName i) ] ingredient.name
+        , textInput [ onBlur (ChangeIngredientPercent i) ] (toString ingredient.percent)
         , plusButton i
         , if showMinusButton then
             minusButton i

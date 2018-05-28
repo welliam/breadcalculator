@@ -24,7 +24,7 @@ updateIngredientName name ingredient =
 
 updateIngredientPercent : String -> Ingredient -> Ingredient
 updateIngredientPercent percent ingredient =
-    case ( percent, String.toInt percent ) of
+    case ( percent, String.toFloat percent ) of
         ( "", _ ) ->
             { ingredient | percent = 0 }
 
