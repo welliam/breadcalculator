@@ -2,8 +2,8 @@ module Model exposing (..)
 
 
 type alias Model =
-    { overall : IngredientSection
-    , formulas : List IngredientSection
+    { overall : IngredientsSection
+    , formulas : List IngredientsSection
     }
 
 
@@ -19,8 +19,13 @@ type alias Ingredient =
     }
 
 
+type IngredientsSectionId
+    = Overall
+    | Formula Int
+
+
 type Msg
-    = ChangeIngredientName Int String
-    | ChangeIngredientPercent Int String
-    | RemoveIngredient Int
-    | AddIngredient Int
+    = ChangeIngredientName IngredientsSectionId Int String
+    | ChangeIngredientPercent IngredientsSectionId Int String
+    | RemoveIngredient IngredientsSectionId Int
+    | AddIngredient IngredientsSectionId Int

@@ -61,16 +61,39 @@ addAfter index list x =
             head :: addAfter (i - 1) rest x
 
 
-updateOverallSection : Model -> (IngredientSection -> IngredientSection) -> Model
-updateOverallSection model update =
-    { model | overall = update model.overall }
+updateFormulaSection :
+    List IngredientsSection
+    -> Int
+    -> (IngredientsSection -> IngredientsSection)
+    -> List IngredientsSection
+updateFormulaSection sections nth update =
+    case ( sections, nth ) of
+        ( [], _ ) ->
+            []
+
+        ( head :: rest, 0 ) ->
+            update head :: rest
+
+        ( head :: rest, n ) ->
+            head :: updateFormulaSection rest n update
+
+
+updateSection : Model -> IngredientsSectionId -> (IngredientsSection -> IngredientsSection) -> Model
+updateSection model id update =
+    case id of
+        Overall ->
+            { model | overall = update model.overall }
+
+        Formula nth ->
+            { model | formulas = updateFormulaSection model.formulas nth update }
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
-        ChangeIngredientName nth name ->
-            ( updateOverallSection model
+        ChangeIngredientName section nth name ->
+            ( updateSection model
+                section
                 (\section ->
                     { section
                         | ingredients =
@@ -82,8 +105,9 @@ update msg model =
             , Cmd.none
             )
 
-        ChangeIngredientPercent nth percent ->
-            ( updateOverallSection model
+        ChangeIngredientPercent section nth percent ->
+            ( updateSection model
+                section
                 (\section ->
                     { section
                         | ingredients =
@@ -95,8 +119,9 @@ update msg model =
             , Cmd.none
             )
 
-        RemoveIngredient nth ->
-            ( updateOverallSection model
+        RemoveIngredient section nth ->
+            ( updateSection model
+                section
                 (\section ->
                     { section
                         | ingredients = removeNth nth section.ingredients
@@ -105,8 +130,9 @@ update msg model =
             , Cmd.none
             )
 
-        AddIngredient nth ->
-            ( updateOverallSection model
+        AddIngredient section nth ->
+            ( updateSection model
+                section
                 (\section ->
                     { section
                         | ingredients =

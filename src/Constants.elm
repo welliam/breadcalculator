@@ -14,7 +14,11 @@ init =
             { name = "Overall"
             , ingredients = [ { name = "hello", percent = 100 } ]
             }
-      , formulas = []
+      , formulas =
+            [ { name = "Final"
+              , ingredients = [ { name = "world", percent = 100 } ]
+              }
+            ]
       }
     , Cmd.none
     )
