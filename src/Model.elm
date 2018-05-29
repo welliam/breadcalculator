@@ -2,12 +2,21 @@ module Model exposing (..)
 
 
 type alias Model =
-    { ingredients : List Ingredient
+    { overall : IngredientSection
+    , formulas : List IngredientSection
+    }
+
+
+type alias IngredientsSection =
+    { name : String
+    , ingredients : List Ingredient
     }
 
 
 type alias Ingredient =
-    { name : String, percent : Float }
+    { name : String
+    , percent : Float
+    }
 
 
 type Msg

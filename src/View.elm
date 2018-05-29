@@ -1,7 +1,7 @@
 module View exposing (view)
 
 import Constants
-import Html exposing (Attribute, button, div, input, text)
+import Html exposing (Attribute, button, div, h2, input, text)
 import Html.Attributes exposing (attribute, value)
 import Html.Events exposing (on, onClick, onInput, targetValue)
 import Json.Decode as Json
@@ -56,6 +56,11 @@ formatIngredients ingredients =
             List.indexedMap (formatIngredient True) ingredients
 
 
+formatIngredientsSection : IngredientSection -> Html.Html Msg
+formatIngredientsSection section =
+    div [] [ h2 [] [ text section.name ], div [] (formatIngredients section.ingredients) ]
+
+
 formatStats : List Ingredient -> Html.Html Msg
 formatStats ingredients =
     text (toString (List.sum (List.map .percent ingredients)))
@@ -64,7 +69,6 @@ formatStats ingredients =
 view : Model -> Html.Html Msg
 view model =
     div []
-        (List.append
-            (formatIngredients model.ingredients)
-            [ formatStats model.ingredients ]
-        )
+        [ formatIngredientsSection model.overall
+        , formatStats model.overall.ingredients
+        ]

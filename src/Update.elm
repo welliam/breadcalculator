@@ -61,37 +61,57 @@ addAfter index list x =
             head :: addAfter (i - 1) rest x
 
 
+updateOverallSection : Model -> (IngredientSection -> IngredientSection) -> Model
+updateOverallSection model update =
+    { model | overall = update model.overall }
+
+
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         ChangeIngredientName nth name ->
-            ( { ingredients =
-                    updateNth nth
-                        model.ingredients
-                        (updateIngredientName name)
-              }
+            ( updateOverallSection model
+                (\section ->
+                    { section
+                        | ingredients =
+                            updateNth nth
+                                section.ingredients
+                                (updateIngredientName name)
+                    }
+                )
             , Cmd.none
             )
 
         ChangeIngredientPercent nth percent ->
-            ( { ingredients =
-                    updateNth nth
-                        model.ingredients
-                        (updateIngredientPercent percent)
-              }
+            ( updateOverallSection model
+                (\section ->
+                    { section
+                        | ingredients =
+                            updateNth nth
+                                section.ingredients
+                                (updateIngredientPercent percent)
+                    }
+                )
             , Cmd.none
             )
 
         RemoveIngredient nth ->
-            ( { ingredients =
-                    removeNth nth model.ingredients
-              }
+            ( updateOverallSection model
+                (\section ->
+                    { section
+                        | ingredients = removeNth nth section.ingredients
+                    }
+                )
             , Cmd.none
             )
 
         AddIngredient nth ->
-            ( { ingredients =
-                    addAfter nth model.ingredients Constants.blankIngredient
-              }
+            ( updateOverallSection model
+                (\section ->
+                    { section
+                        | ingredients =
+                            addAfter nth section.ingredients Constants.blankIngredient
+                    }
+                )
             , Cmd.none
             )

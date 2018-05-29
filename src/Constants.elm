@@ -10,6 +10,11 @@ blankIngredient =
 
 init : ( Model, Cmd msg )
 init =
-    ( { ingredients = [ { name = "hello", percent = 100 } ] }
+    ( { overall =
+            { name = "Overall"
+            , ingredients = [ { name = "hello", percent = 100 } ]
+            }
+      , formulas = []
+      }
     , Cmd.none
     )
