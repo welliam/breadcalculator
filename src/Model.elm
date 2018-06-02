@@ -4,6 +4,7 @@ module Model exposing (..)
 type alias Model =
     { overall : IngredientsSection
     , formulas : List IngredientsSection
+    , name : String
     , weight : Float
     , prefermentedFlour : Float
     }
@@ -35,6 +36,7 @@ type Msg
     | ChangeIngredientPercent IngredientsSectionId Int String
     | RemoveIngredient IngredientsSectionId Int
     | AddIngredient IngredientsSectionId Int
+    | ChangeName String
     | ChangeWeight String
     | ChangePrefermentedFlour String
 

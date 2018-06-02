@@ -19,6 +19,7 @@ init =
               , ingredients = [ { name = "world", percent = 100 } ]
               }
             ]
+      , name = "formula"
       , weight = 700
       , prefermentedFlour = 15
       }

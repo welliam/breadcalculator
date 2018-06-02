@@ -167,3 +167,8 @@ update msg model =
                     model
             , Cmd.none
             )
+
+        ChangeName to ->
+            ( { model | name = to }
+            , Cmd.none
+            )

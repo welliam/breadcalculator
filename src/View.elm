@@ -74,11 +74,15 @@ statsSection : Model -> Html.Html Msg
 statsSection model =
     div []
         [ div []
-            [ span [] [ h3 [] [ text "weight" ] ]
+            [ span [] [ h3 [] [ text "Name" ] ]
+            , textInput [ onBlur ChangeName ] model.name
+            ]
+        , div []
+            [ span [] [ h3 [] [ text "Weight" ] ]
             , textInput [ onBlur ChangeWeight ] (toString model.weight)
             ]
         , div []
-            [ span [] [ h3 [] [ text "prefermented flour" ] ]
+            [ span [] [ h3 [] [ text "Prefermented flour" ] ]
             , textInput [ onBlur ChangePrefermentedFlour ] (toString model.prefermentedFlour)
             ]
         ]
