@@ -1,7 +1,7 @@
 module View exposing (view)
 
 import Constants
-import Html exposing (Attribute, button, div, h2, input, text)
+import Html exposing (Attribute, button, div, h2, h3, input, span, text)
 import Html.Attributes exposing (attribute, value)
 import Html.Events exposing (on, onClick, onInput, targetValue)
 import Json.Decode as Json
@@ -70,10 +70,25 @@ formatStats ingredients =
     text (toString (List.sum (List.map .percent ingredients)))
 
 
+statsSection : Model -> Html.Html Msg
+statsSection model =
+    div []
+        [ div []
+            [ span [] [ h3 [] [ text "weight" ] ]
+            , textInput [ onBlur ChangeWeight ] (toString model.weight)
+            ]
+        , div []
+            [ span [] [ h3 [] [ text "prefermented flour" ] ]
+            , textInput [ onBlur ChangePrefermentedFlour ] (toString model.prefermentedFlour)
+            ]
+        ]
+
+
 view : Model -> Html.Html Msg
 view model =
     div []
-        [ formatIngredientsSection Overall model.overall
+        [ statsSection model
+        , formatIngredientsSection Overall model.overall
         , div []
             (List.indexedMap
                 (\nth section ->

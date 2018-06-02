@@ -19,6 +19,8 @@ init =
               , ingredients = [ { name = "world", percent = 100 } ]
               }
             ]
+      , weight = 700
+      , prefermentedFlour = 15
       }
     , Cmd.none
     )

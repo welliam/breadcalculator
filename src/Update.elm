@@ -141,3 +141,29 @@ update msg model =
                 )
             , Cmd.none
             )
+
+        ChangeWeight to ->
+            ( case ( to, String.toFloat to ) of
+                ( "", _ ) ->
+                    { model | weight = 0 }
+
+                ( _, Ok x ) ->
+                    { model | weight = x }
+
+                ( _, Err _ ) ->
+                    model
+            , Cmd.none
+            )
+
+        ChangePrefermentedFlour to ->
+            ( case ( to, String.toFloat to ) of
+                ( "", _ ) ->
+                    { model | prefermentedFlour = 0 }
+
+                ( _, Ok x ) ->
+                    { model | prefermentedFlour = x }
+
+                ( _, Err _ ) ->
+                    model
+            , Cmd.none
+            )
