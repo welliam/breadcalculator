@@ -8,6 +8,14 @@ import Json.Decode as Json
 import Model exposing (..)
 
 
+type alias IngredientProperties =
+    { sectionId : IngredientsSectionId
+    , showMinusButton : Bool
+    , index : Int
+    , ingredient : Ingredient
+    }
+
+
 textInput : List (Attribute Msg) -> String -> Html.Html Msg
 textInput attributes inputValue =
     input
@@ -30,14 +38,17 @@ onBlur tagger =
     on "blur" (Json.map tagger targetValue)
 
 
-formatIngredient : IngredientsSectionId -> Bool -> Int -> Ingredient -> Html.Html Msg
-formatIngredient section showMinusButton i ingredient =
+formatIngredient : IngredientProperties -> Html.Html Msg
+formatIngredient props =
     div []
-        [ textInput [ onBlur (ChangeIngredientName section i) ] ingredient.name
-        , textInput [ onBlur (ChangeIngredientPercent section i) ] (toString ingredient.percent)
-        , plusButton section i
-        , if showMinusButton then
-            minusButton section i
+        [ textInput [ onBlur (ChangeIngredientName props.sectionId props.index) ]
+            props.ingredient.name
+        , textInput
+            [ onBlur (ChangeIngredientPercent props.sectionId props.index) ]
+            (toString props.ingredient.percent)
+        , plusButton props.sectionId props.index
+        , if props.showMinusButton then
+            minusButton props.sectionId props.index
           else
             text ""
         ]
@@ -50,10 +61,25 @@ formatIngredients section ingredients =
             [ text "OH FUCK" ]
 
         [ ingredient ] ->
-            [ formatIngredient section False 0 ingredient ]
+            [ formatIngredient
+                { sectionId = section
+                , showMinusButton = False
+                , index = 0
+                , ingredient = ingredient
+                }
+            ]
 
         _ ->
-            List.indexedMap (formatIngredient section True) ingredients
+            List.indexedMap
+                (\index ingredient ->
+                    formatIngredient
+                        { sectionId = section
+                        , showMinusButton = True
+                        , index = index
+                        , ingredient = ingredient
+                        }
+                )
+                ingredients
 
 
 formatIngredientsSection : IngredientsSectionId -> IngredientsSection -> Html.Html Msg
