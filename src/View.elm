@@ -1,11 +1,12 @@
 module View exposing (view)
 
 import Constants
-import Html exposing (Attribute, button, div, h2, h3, input, span, text)
-import Html.Attributes exposing (attribute, value)
+import Html exposing (Attribute, button, div, h2, h3, input, label, span, text)
+import Html.Attributes exposing (attribute, checked, value)
 import Html.Events exposing (on, onClick, onInput, targetValue)
 import Json.Decode as Json
 import Model exposing (..)
+import String
 
 
 type alias IngredientProperties =
@@ -13,6 +14,7 @@ type alias IngredientProperties =
     , showMinusButton : Bool
     , index : Int
     , ingredient : Ingredient
+    , onePercentWeight : Float
     }
 
 
@@ -38,6 +40,49 @@ onBlur tagger =
     on "blur" (Json.map tagger targetValue)
 
 
+consIf : Bool -> a -> List a -> List a
+consIf b x t =
+    if b then
+        x :: t
+    else
+        t
+
+
+ingredientKindLabel : IngredientKind -> String
+ingredientKindLabel kind =
+    case kind of
+        Model.Flour ->
+            "Flour"
+
+        Model.Water ->
+            "Water"
+
+        Model.Other ->
+            "Other"
+
+
+ingredientKindSelector : IngredientsSectionId -> Int -> IngredientKind -> Html.Html Msg
+ingredientKindSelector section nth kind =
+    let
+        fmt k =
+            button
+                (consIf
+                    (kind == k)
+                    (attribute "style" "color: white; background-color: black")
+                    [ attribute "type" "button"
+                    , onClick (ChangeIngredientKind section nth k)
+                    ]
+                )
+                [ text (ingredientKindLabel k) ]
+    in
+    span [] (List.map fmt [ Model.Flour, Model.Water, Model.Other ])
+
+
+displayFloat : Float -> String
+displayFloat float =
+    toString (round float) ++ "g"
+
+
 formatIngredient : IngredientProperties -> Html.Html Msg
 formatIngredient props =
     div []
@@ -46,6 +91,10 @@ formatIngredient props =
         , textInput
             [ onBlur (ChangeIngredientPercent props.sectionId props.index) ]
             (toString props.ingredient.percent)
+        , span
+            [ attribute "style" "min-width: 3em; display: inline-block; text-align: right" ]
+            [ text (displayFloat (props.onePercentWeight * props.ingredient.percent)) ]
+        , ingredientKindSelector props.sectionId props.index props.ingredient.kind
         , plusButton props.sectionId props.index
         , if props.showMinusButton then
             minusButton props.sectionId props.index
@@ -54,8 +103,8 @@ formatIngredient props =
         ]
 
 
-formatIngredients : IngredientsSectionId -> List Ingredient -> List (Html.Html Msg)
-formatIngredients section ingredients =
+formatIngredients : Float -> IngredientsSectionId -> List Ingredient -> List (Html.Html Msg)
+formatIngredients onePercentWeight section ingredients =
     case ingredients of
         [] ->
             [ text "OH FUCK" ]
@@ -66,6 +115,7 @@ formatIngredients section ingredients =
                 , showMinusButton = False
                 , index = 0
                 , ingredient = ingredient
+                , onePercentWeight = onePercentWeight
                 }
             ]
 
@@ -77,17 +127,22 @@ formatIngredients section ingredients =
                         , showMinusButton = True
                         , index = index
                         , ingredient = ingredient
+                        , onePercentWeight = onePercentWeight
                         }
                 )
                 ingredients
 
 
-formatIngredientsSection : IngredientsSectionId -> IngredientsSection -> Html.Html Msg
-formatIngredientsSection sectionId section =
+formatIngredientsSection :
+    Float
+    -> IngredientsSectionId
+    -> IngredientsSection
+    -> Html.Html Msg
+formatIngredientsSection weight sectionId section =
     div
         []
         [ h2 [] [ text section.name ]
-        , div [] (formatIngredients sectionId section.ingredients)
+        , div [] (formatIngredients weight sectionId section.ingredients)
         ]
 
 
@@ -114,15 +169,24 @@ statsSection model =
         ]
 
 
+computeOnePercentWeight : Model -> Float
+computeOnePercentWeight m =
+    m.weight / List.sum (List.map .percent m.overall.ingredients)
+
+
 view : Model -> Html.Html Msg
 view model =
+    let
+        onePercentWeight =
+            computeOnePercentWeight model
+    in
     div []
         [ statsSection model
-        , formatIngredientsSection Overall model.overall
+        , formatIngredientsSection onePercentWeight Overall model.overall
         , div []
             (List.indexedMap
                 (\nth section ->
-                    formatIngredientsSection (Formula nth) section
+                    formatIngredientsSection onePercentWeight (Formula nth) section
                 )
                 model.formulas
             )

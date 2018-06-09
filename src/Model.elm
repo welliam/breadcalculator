@@ -19,7 +19,14 @@ type alias IngredientsSection =
 type alias Ingredient =
     { name : String
     , percent : Float
+    , kind : IngredientKind
     }
+
+
+type IngredientKind
+    = Flour
+    | Water
+    | Other
 
 
 
@@ -34,6 +41,7 @@ type IngredientsSectionId
 type Msg
     = ChangeIngredientName IngredientsSectionId Int String
     | ChangeIngredientPercent IngredientsSectionId Int String
+    | ChangeIngredientKind IngredientsSectionId Int IngredientKind
     | RemoveIngredient IngredientsSectionId Int
     | AddIngredient IngredientsSectionId Int
     | ChangeName String
@@ -43,9 +51,3 @@ type Msg
 
 
 --------------------
-
-
-type IngredientKind
-    = Flour
-    | Water
-    | Other

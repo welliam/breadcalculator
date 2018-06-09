@@ -22,6 +22,11 @@ updateIngredientName name ingredient =
     { ingredient | name = name }
 
 
+updateIngredientKind : IngredientKind -> Ingredient -> Ingredient
+updateIngredientKind kind ingredient =
+    { ingredient | kind = kind }
+
+
 updateIngredientPercent : String -> Ingredient -> Ingredient
 updateIngredientPercent percent ingredient =
     case ( percent, String.toFloat percent ) of
@@ -78,7 +83,11 @@ updateFormulaSection sections nth update =
             head :: updateFormulaSection rest n update
 
 
-updateSection : Model -> IngredientsSectionId -> (IngredientsSection -> IngredientsSection) -> Model
+updateSection :
+    Model
+    -> IngredientsSectionId
+    -> (IngredientsSection -> IngredientsSection)
+    -> Model
 updateSection model id update =
     case id of
         Overall ->
@@ -114,6 +123,20 @@ update msg model =
                             updateNth nth
                                 section.ingredients
                                 (updateIngredientPercent percent)
+                    }
+                )
+            , Cmd.none
+            )
+
+        ChangeIngredientKind section nth kind ->
+            ( updateSection model
+                section
+                (\section ->
+                    { section
+                        | ingredients =
+                            updateNth nth
+                                section.ingredients
+                                (updateIngredientKind kind)
                     }
                 )
             , Cmd.none

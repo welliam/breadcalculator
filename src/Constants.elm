@@ -5,18 +5,18 @@ import Model exposing (Model)
 
 blankIngredient : Model.Ingredient
 blankIngredient =
-    { name = "", percent = 0 }
+    { name = "", percent = 0, kind = Model.Flour }
 
 
 init : ( Model, Cmd msg )
 init =
     ( { overall =
             { name = "Overall"
-            , ingredients = [ { name = "hello", percent = 100 } ]
+            , ingredients = [ { name = "bread flour", percent = 100, kind = Model.Flour } ]
             }
       , formulas =
             [ { name = "Final"
-              , ingredients = [ { name = "world", percent = 100 } ]
+              , ingredients = [ { name = "bread flour", percent = 100, kind = Model.Flour } ]
               }
             ]
       , name = "formula"
