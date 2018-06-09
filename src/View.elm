@@ -7,6 +7,7 @@ import Html.Events exposing (on, onClick, onInput, targetValue)
 import Json.Decode as Json
 import Model exposing (..)
 import String
+import Style
 
 
 type alias IngredientProperties =
@@ -18,6 +19,20 @@ type alias IngredientProperties =
     }
 
 
+block : String -> List (Html.Html Msg) -> Html.Html Msg
+block title body =
+    div [ Style.styles Style.block ]
+        (h2 [ Style.styles Style.blockTitle ] [ text title ] :: body)
+
+
+keyValueInput : String -> Html.Html Msg -> Html.Html Msg
+keyValueInput key input =
+    div [ Style.styles Style.keyValueInput ]
+        [ h2 [ Style.styles Style.keyValueInputHeader ] [ text key ]
+        , input
+        ]
+
+
 textInput : List (Attribute Msg) -> String -> Html.Html Msg
 textInput attributes inputValue =
     input
@@ -27,12 +42,12 @@ textInput attributes inputValue =
 
 minusButton : IngredientsSectionId -> Int -> Html.Html Msg
 minusButton section i =
-    button [ onClick (RemoveIngredient section i) ] [ text "-" ]
+    button [ onClick (RemoveIngredient section i), Style.styles Style.button ] [ text "-" ]
 
 
 plusButton : IngredientsSectionId -> Int -> Html.Html Msg
 plusButton section i =
-    button [ onClick (AddIngredient section i) ] [ text "+" ]
+    button [ onClick (AddIngredient section i), Style.styles Style.button ] [ text "+" ]
 
 
 onBlur : (String -> Msg) -> Attribute Msg
@@ -40,10 +55,10 @@ onBlur tagger =
     on "blur" (Json.map tagger targetValue)
 
 
-consIf : Bool -> a -> List a -> List a
-consIf b x t =
+appendIf : Bool -> List a -> List a -> List a
+appendIf b maybeAppend t =
     if b then
-        x :: t
+        maybeAppend ++ t
     else
         t
 
@@ -66,13 +81,15 @@ ingredientKindSelector section nth kind =
     let
         fmt k =
             button
-                (consIf
-                    (kind == k)
-                    (attribute "style" "color: white; background-color: black")
-                    [ attribute "type" "button"
-                    , onClick (ChangeIngredientKind section nth k)
-                    ]
-                )
+                [ Style.styles
+                    (if kind == k then
+                        Style.buttonSelected
+                     else
+                        Style.button
+                    )
+                , attribute "type" "button"
+                , onClick (ChangeIngredientKind section nth k)
+                ]
                 [ text (ingredientKindLabel k) ]
     in
     span [] (List.map fmt [ Model.Flour, Model.Water, Model.Other ])
@@ -86,13 +103,18 @@ displayFloat float =
 formatIngredient : IngredientProperties -> Html.Html Msg
 formatIngredient props =
     div []
-        [ textInput [ onBlur (ChangeIngredientName props.sectionId props.index) ]
+        [ textInput
+            [ Style.styles Style.input
+            , onBlur (ChangeIngredientName props.sectionId props.index)
+            ]
             props.ingredient.name
         , textInput
-            [ onBlur (ChangeIngredientPercent props.sectionId props.index) ]
+            [ Style.styles Style.numberInput
+            , onBlur (ChangeIngredientPercent props.sectionId props.index)
+            ]
             (toString props.ingredient.percent)
         , span
-            [ attribute "style" "min-width: 3em; display: inline-block; text-align: right" ]
+            [ Style.styles Style.displayWeight ]
             [ text (displayFloat (props.onePercentWeight * props.ingredient.percent)) ]
         , ingredientKindSelector props.sectionId props.index props.ingredient.kind
         , plusButton props.sectionId props.index
@@ -139,11 +161,8 @@ formatIngredientsSection :
     -> IngredientsSection
     -> Html.Html Msg
 formatIngredientsSection weight sectionId section =
-    div
-        []
-        [ h2 [] [ text section.name ]
-        , div [] (formatIngredients weight sectionId section.ingredients)
-        ]
+    block section.name
+        [ div [] (formatIngredients weight sectionId section.ingredients) ]
 
 
 formatStats : List Ingredient -> Html.Html Msg
@@ -153,19 +172,19 @@ formatStats ingredients =
 
 statsSection : Model -> Html.Html Msg
 statsSection model =
-    div []
-        [ div []
-            [ span [] [ h3 [] [ text "Name" ] ]
-            , textInput [ onBlur ChangeName ] model.name
-            ]
-        , div []
-            [ span [] [ h3 [] [ text "Weight" ] ]
-            , textInput [ onBlur ChangeWeight ] (toString model.weight)
-            ]
-        , div []
-            [ span [] [ h3 [] [ text "Prefermented flour" ] ]
-            , textInput [ onBlur ChangePrefermentedFlour ] (toString model.prefermentedFlour)
-            ]
+    block "Build-a-bread workshop :3c"
+        [ keyValueInput "Name"
+            (textInput [ Style.styles Style.input, onBlur ChangeName ]
+                model.name
+            )
+        , keyValueInput "Weight"
+            (textInput [ Style.styles Style.numberInput, onBlur ChangeWeight ]
+                (toString model.weight)
+            )
+        , keyValueInput "Prefermented flour"
+            (textInput [ Style.styles Style.numberInput, onBlur ChangePrefermentedFlour ]
+                (toString model.prefermentedFlour)
+            )
         ]
 
 
@@ -180,7 +199,7 @@ view model =
         onePercentWeight =
             computeOnePercentWeight model
     in
-    div []
+    div [ Style.styles (Style.autoMargin ++ Style.maxWidth ++ Style.defaultText) ]
         [ statsSection model
         , formatIngredientsSection onePercentWeight Overall model.overall
         , div []
