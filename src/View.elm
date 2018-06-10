@@ -165,14 +165,9 @@ formatIngredientsSection weight sectionId section =
         [ div [] (formatIngredients weight sectionId section.ingredients) ]
 
 
-formatStats : List Ingredient -> Html.Html Msg
-formatStats ingredients =
-    text (toString (List.sum (List.map .percent ingredients)))
-
-
 statsSection : Model -> Html.Html Msg
 statsSection model =
-    block "Build-a-bread workshop :3c"
+    block "Build-a-bread workshop"
         [ keyValueInput "Name"
             (textInput [ Style.styles Style.input, onBlur ChangeName ]
                 model.name
@@ -209,5 +204,4 @@ view model =
                 )
                 model.formulas
             )
-        , formatStats model.overall.ingredients
         ]

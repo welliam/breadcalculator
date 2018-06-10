@@ -1,8 +1,8 @@
 module Model exposing (..)
 
 
-type alias Model =
-    { overall : IngredientsSection
+type alias MetaModel a =
+    { overall : MetaIngredientsSection a
     , formulas : List IngredientsSection
     , name : String
     , weight : Float
@@ -10,10 +10,18 @@ type alias Model =
     }
 
 
-type alias IngredientsSection =
+type alias MetaIngredientsSection a =
     { name : String
-    , ingredients : List Ingredient
+    , ingredients : List a
     }
+
+
+type alias IngredientsSection =
+    MetaIngredientsSection Ingredient
+
+
+type alias WeightedIngredientsSection =
+    MetaIngredientsSection WeightedIngredient
 
 
 type alias Ingredient =
@@ -21,6 +29,22 @@ type alias Ingredient =
     , percent : Float
     , kind : IngredientKind
     }
+
+
+type alias WeightedIngredient =
+    { name : String
+    , percent : Float
+    , kind : IngredientKind
+    , weight : Float
+    }
+
+
+type alias Model =
+    MetaModel Ingredient
+
+
+type alias ProcessedModel =
+    MetaModel WeightedIngredient
 
 
 type IngredientKind
@@ -47,7 +71,3 @@ type Msg
     | ChangeName String
     | ChangeWeight String
     | ChangePrefermentedFlour String
-
-
-
---------------------

@@ -11,6 +11,11 @@ keyValueInput =
     ]
 
 
+leftMargin1 : List String
+leftMargin1 =
+    [ "margin-left: 1em" ]
+
+
 pullRight : List String
 pullRight =
     [ "float: right" ]
