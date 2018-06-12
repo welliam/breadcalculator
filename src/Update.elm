@@ -97,48 +97,46 @@ updateSection model id update =
             { model | formulas = updateFormulaSection model.formulas nth update }
 
 
+updateSectionIngredient :
+    Model
+    -> IngredientsSectionId
+    -> Int
+    -> (Ingredient -> Ingredient)
+    -> Model
+updateSectionIngredient model id nth f =
+    updateSection model
+        id
+        (\section -> { section | ingredients = updateNth nth section.ingredients f })
+
+
+parseInputtedFloat : String -> Float -> Float
+parseInputtedFloat string default =
+    case ( x, String.toFloat string ) of
+        ( "", _ ) ->
+            0
+
+        ( _, Ok x ) ->
+            x
+
+        ( _, Err _ ) ->
+            default
+
+
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         ChangeIngredientName section nth name ->
-            ( updateSection model
-                section
-                (\section ->
-                    { section
-                        | ingredients =
-                            updateNth nth
-                                section.ingredients
-                                (updateIngredientName name)
-                    }
-                )
+            ( updateSectionIngredient model section nth (updateIngredientName name)
             , Cmd.none
             )
 
         ChangeIngredientPercent section nth percent ->
-            ( updateSection model
-                section
-                (\section ->
-                    { section
-                        | ingredients =
-                            updateNth nth
-                                section.ingredients
-                                (updateIngredientPercent percent)
-                    }
-                )
+            ( updateSectionIngredient model section nth (updateIngredientPercent percent)
             , Cmd.none
             )
 
         ChangeIngredientKind section nth kind ->
-            ( updateSection model
-                section
-                (\section ->
-                    { section
-                        | ingredients =
-                            updateNth nth
-                                section.ingredients
-                                (updateIngredientKind kind)
-                    }
-                )
+            ( updateSectionIngredient model section nth (updateIngredientKind kind)
             , Cmd.none
             )
 
@@ -166,28 +164,12 @@ update msg model =
             )
 
         ChangeWeight to ->
-            ( case ( to, String.toFloat to ) of
-                ( "", _ ) ->
-                    { model | weight = 0 }
-
-                ( _, Ok x ) ->
-                    { model | weight = x }
-
-                ( _, Err _ ) ->
-                    model
+            ( { model | weight = parseInputtedFloat to model.weight }
             , Cmd.none
             )
 
         ChangePrefermentedFlour to ->
-            ( case ( to, String.toFloat to ) of
-                ( "", _ ) ->
-                    { model | prefermentedFlour = 0 }
-
-                ( _, Ok x ) ->
-                    { model | prefermentedFlour = x }
-
-                ( _, Err _ ) ->
-                    model
+            ( { model | prefermentedFlour = parseInputtedFloat to model.weight }
             , Cmd.none
             )
 
